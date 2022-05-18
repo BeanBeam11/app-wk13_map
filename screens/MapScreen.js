@@ -4,16 +4,15 @@ import { Platform } from "react-native";
 import { Box, Center } from 'native-base';
 import * as Location from 'expo-location';
 import * as Device from "expo-device";
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getUbikeInfo } from '../api';
-import metroJson from "../json/metro.json";
+import taipeiMetroJson from "../json/taipei_metro.json";
 import ActionButton from '../components/ActionButton';
 
 export default function MapScreen() {
    const [msg, setMsg] = useState("Waiting...");
    const [onCurrentLocation, setOnCurrentLocation] = useState(false);
-   const [metro, setMetro] = useState(metroJson);
+   const [taipeiMetro, setTaipeiMetro] = useState(taipeiMetroJson);
    const [ubike, setUbike] = useState([]);
    const [zoomRatio, setZoomRatio] = useState(1);
 
@@ -89,15 +88,15 @@ export default function MapScreen() {
             showsTraffic
             onRegionChangeComplete={onRegionChangeComplete}
          >
-            {(zoomRatio > 0.14) && metro.map((site) => (
+            {(zoomRatio > 0.14) && taipeiMetro.map((site) => (
                <Marker
-                  coordinate={{ latitude: site.latitude, longitude: site.longitude }}
-                  key={`${site.id}${site.line}`}
-                  title={site.name}
+                  coordinate={{ latitude: site.lat, longitude: site.lon }}
+                  key={site.station_code}
+                  title={`【${site.line_name}】${site.station_name_tw}`}
                   description={site.address}
                >
-                  <Center bg="white" borderRadius={60} p={3 * zoomRatio} borderWidth={2 * zoomRatio} borderColor="black">
-                     <Icon name={"bus"} size={30 * zoomRatio} color="black" />
+                  <Center bg="#4B9FC5" borderRadius={5} p={3 * zoomRatio}>
+                     <MaterialCommunityIcons name={"subway-variant"} size={30 * zoomRatio} color="#fff" />
                   </Center>
                </Marker>
             ))}
@@ -108,8 +107,8 @@ export default function MapScreen() {
                      longitude: Number(site.lng),
                   }}
                   key={site.sno}
-                  title={`${site.sna} ${site.sbi}/${site.bemp}`}
-                  description={site.ar}
+                  title={`${site.sna.split('_')[1]}`}
+                  description={`可借：${site.sbi} / 可還：${site.bemp}`}
                >
                   <ActionButton zoomRatio={zoomRatio} site={site} />
                </Marker>
@@ -124,14 +123,14 @@ export default function MapScreen() {
                zIndex={99}
                right={5}
                bottom={5}
+               padding={2}
             >
-               <Ionicons name={"ios-locate"}
-                  size={60}
-                  color="black"
+               <MaterialCommunityIcons name={"crosshairs-gps"}
+                  size={36}
+                  color="#A9D295"
                   onPress={getLocation}
                />
             </Box>
-
          )}
       </Box>
    );
